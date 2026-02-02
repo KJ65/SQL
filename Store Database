@@ -26,7 +26,6 @@ VALUES
     (15, 'Cozy Throw Blanket', 'Furnishings', 24.99, 100, 4.2);
     
     
--- © Copyright 2025 Break Into Tech  --
 
 
 --Write a SQL query that orders the items by price.
