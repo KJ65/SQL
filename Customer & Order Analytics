@@ -54,8 +54,19 @@ GROUP BY product;
 SELECT COUNT(distinct cust.acctnum), AVG(quantity*price)
 FROM BIT_DB.FebSales Feb
 LEFT JOIN BIT_DB.customers cust
-ON FEB.orderid = cust.order_id
+ON FEB.orderid = cust.order_id;
+
+--Write a query that only retrieves employee IDs that start with 14, have a single character after, and ends with 9.
+SELECT employee_ID
+FROM employees
+WHERE employee_ID LIKE '14_9';
+
+--Write a query that only retrieves employee IDs that start with 16, have a single character after, and followed by 0 in the MarSales table.
+SELECT orderID
+FROM BIT_DB.MarSales
+WHERE orderID LIKE '16_0%';
 WHERE Feb.Quantity > 2
 AND length(orderid) = 6
 AND orderid <> 'Order ID';
+
 
