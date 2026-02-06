@@ -7,20 +7,20 @@ FROM BIT_DB.customers
 WHERE length(order_id) = 6
 AND order_id <> 'Order ID';
 
---How many many unique orders were placed in January? In other words, how many distinct order ids do we have?
+--Question 1. How many many unique orders were placed in January? In other words, how many distinct order ids do we have?
 SELECT COUNT(distinct orderid)
 FROM BIT_DB.JanSales
 WHERE length(orderid) = 6
 AND orderid <> 'Order ID';
 
---How many of those orders were for an iPhone?
+--Question 2. How many of those orders were for an iPhone?
 SELECT COUNT(distinct orderid)
 FROM BIT_DB.JanSales
 WHERE Product = 'iPhone'
 AND length(orderid) = 6
 AND orderid <> 'Order ID';
 
---Select the customer account numbers for all the orders that were placed in February.
+--Question 3. Select the customer account numbers for all the orders that were placed in February.
 SELECT distinct acctnum
 FROM BIT_DB.customers cust
 
@@ -29,44 +29,91 @@ ON cust.order_id=FEB.orderid
 WHERE length(orderid) = 6
 AND orderid <> 'Order ID';
 
---Which product was the cheapest one sold in January, and what was the price?
+--Question 4. Which product was the cheapest one sold in January, and what was the price?
 SELECT distinct Product, price
 FROM BIT_DB.JanSales
 WHERE price in (SELECT min(price) FROM BIT_DB.JanSales);
 
---Another option for previous one
+--Question 5. Another option for previous one
 SELECT distinct product, price
 FROM BIT_DB.JanSales
 ORDER BY price ASC LIMIT 1;
 
---What is the total revenue for each product sold in January?
+--Questio 6. What is the total revenue for each product sold in January?
 SELECT SUM(quantity)*price as revenue
 FROM BIT_DB.JanSales
 GROUP BY product;
 
---Which products were sold in February at 548 Lincoln St, Seattle, WA 98101, how many of each were sold, and what was the total revenue?
+--Question 7. Which products were sold in February at 548 Lincoln St, Seattle, WA 98101, how many of each were sold, and what was the total revenue?
 SELECT SUM(Quantity) product, SUM(quantity)*price as revenue
 FROM BIT_DB.FebSales
 WHERE location = '548 Lincoln St, Seattle, WA 98101'
 GROUP BY product;
 
---How many customers ordered more than 2 products at a time in February, and what was the average amount spent for those customers?
+--Question 8. How many customers ordered more than 2 products at a time in February, and what was the average amount spent for those customers?
 SELECT COUNT(distinct cust.acctnum), AVG(quantity*price)
 FROM BIT_DB.FebSales Feb
 LEFT JOIN BIT_DB.customers cust
-ON FEB.orderid = cust.order_id;
-
---Write a query that only retrieves employee IDs that start with 14, have a single character after, and ends with 9.
-SELECT employee_ID
-FROM employees
-WHERE employee_ID LIKE '14_9';
-
---Write a query that only retrieves employee IDs that start with 16, have a single character after, and followed by 0 in the MarSales table.
-SELECT orderID
-FROM BIT_DB.MarSales
-WHERE orderID LIKE '16_0%';
+ON FEB.orderid = cust.order_id
 WHERE Feb.Quantity > 2
 AND length(orderid) = 6
 AND orderid <> 'Order ID';
+
+--Question 9. How many of each type of headphone were sold in February?
+SELECT SUM(quantity), Product
+FROM BIT_DB.FebSales
+WHERE Product like '%Headphones%'
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+GROUP BY Product;
+
+--Question 10. What was the average amount spent per account in February?
+SELECT AVG(quantity*price)
+FROM BIT_DB.FebSales Feb
+LEFT JOIN BIT_DB.customers cust
+ON FEB.orderid=cust.order_id
+WHERE length(orderid) = 6
+AND orderid <> 'Order ID';
+
+--Question 11. Find order ids from Georgia (GA) where the order has an average price greater than $1,000. Only find orders from dates beginning with ‘04/1’. Assume that the dates are stored in the MM/DD/YY HH:MM format.
+SELECT orderID
+FROM BIT_DB.AprSales
+WHERE orderdate LIKE '04/1%' 
+AND location LIKE '%GA%'
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+GROUP BY orderID
+HAVING AVG(price) > 100;
+
+--Question 12. You’ve been given the following results from the MaySales table. Can you reverse engineer a SQL query that returns these results?
+--The result set will naturally only return 10 rows (i.e., you will not have to use LIMIT to get to 10 results).
+
+--MaySales Results
+--location	orderID
+--818 Wilson St, Los Angeles, CA 90001	194305
+--2 Center St, Austin, TX 73301	194315
+--960 Park St, San Francisco, CA 94016	194325
+--53 Ridge St, Portland, OR 97035	194335
+--734 Hickory St, New York City, NY 10001	194345
+--196 Cherry St, Portland, OR 97035	194355
+--924 13th St, Los Angeles, CA 90001	194365
+--602 Washington St, New York City, NY 10001	194375
+--399 12th St, San Francisco, CA 94016	194385
+--434 Pine St, Seattle, WA 98101	194395 
+SELECT location, orderID
+FROM BIT_DB.MaySales
+WHERE orderID LIKE '1943_5'
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+ORDER BY orderID;
+
+--Question 13. Which product brought in the most revenue in January and how much revenue did it bring in total?
+SELECT product
+, SUM(quantity*price)
+FROM BIT_DB.JanSales
+GROUP BY product
+ORDER BY SUM(quantity*price) desc
+LIMIT 1;
+
 
 
